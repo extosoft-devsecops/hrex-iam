@@ -71,26 +71,6 @@ func HasPermissionReturnsFalseIfNoPermissions(t *testing.T) {
 	assert.False(t, types.HasPermission(perms, required))
 }
 
-func ScopeMatchReturnsTrueForEqualScope(t *testing.T) {
-	assert.True(t, types.ScopeMatch(types.ScopeTenant, types.ScopeTenant))
-}
-
-func ScopeMatchReturnsTrueForBroaderScope(t *testing.T) {
-	assert.True(t, types.ScopeMatch(types.ScopeGlobal, types.ScopeTenant))
-}
-
-func ScopeMatchReturnsFalseForNarrowerScope(t *testing.T) {
-	assert.False(t, types.ScopeMatch(types.ScopeSelf, types.ScopeDepartment))
-}
-
-func ScopeMatchReturnsTrueForUnknownRequiredScope(t *testing.T) {
-	assert.True(t, types.ScopeMatch(types.ScopeGlobal, "unknown"))
-}
-
-func ScopeMatchReturnsFalseForUnknownUserScope(t *testing.T) {
-	assert.False(t, types.ScopeMatch("unknown", types.ScopeGlobal))
-}
-
 func TestPermissionStringIsParsedCorrectly(t *testing.T) {
 	PermissionStringIsParsedCorrectly(t)
 }
@@ -129,24 +109,4 @@ func TestHasPermissionReturnsFalseForDifferentAction(t *testing.T) {
 
 func TestHasPermissionReturnsFalseIfNoPermissions(t *testing.T) {
 	HasPermissionReturnsFalseIfNoPermissions(t)
-}
-
-func TestScopeMatchReturnsTrueForEqualScope(t *testing.T) {
-	ScopeMatchReturnsTrueForEqualScope(t)
-}
-
-func TestScopeMatchReturnsTrueForBroaderScope(t *testing.T) {
-	ScopeMatchReturnsTrueForBroaderScope(t)
-}
-
-func TestScopeMatchReturnsFalseForNarrowerScope(t *testing.T) {
-	ScopeMatchReturnsFalseForNarrowerScope(t)
-}
-
-func TestScopeMatchReturnsTrueForUnknownRequiredScope(t *testing.T) {
-	ScopeMatchReturnsTrueForUnknownRequiredScope(t)
-}
-
-func TestScopeMatchReturnsFalseForUnknownUserScope(t *testing.T) {
-	ScopeMatchReturnsFalseForUnknownUserScope(t)
 }

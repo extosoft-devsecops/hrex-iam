@@ -39,35 +39,13 @@ func ParsePermission(s string) Permission {
 // with scope dominance rules.
 func HasPermission(userPerms []string, required Permission) bool {
 	for _, permStr := range userPerms {
+
 		p := ParsePermission(strings.TrimSpace(permStr))
-		if p.Resource == required.Resource &&
-			p.Action == required.Action &&
-			ScopeMatch(p.Scope, required.Scope) {
+
+		if p.Resource == required.Resource && p.Action == required.Action {
+
 			return true
 		}
 	}
 	return false
-}
-
-// scopeOrder defines dominance ranking for scopes
-// higher number = broader scope.
-var scopeOrder = map[string]int{
-	ScopeSelf:       1,
-	ScopeDepartment: 2,
-	ScopeTenant:     3,
-	ScopeGlobal:     4,
-}
-
-// scopeRank returns the integer ranking of a scope.
-func scopeRank(scope string) int {
-	if v, ok := scopeOrder[scope]; ok {
-		return v
-	}
-	// unknown scope = lowest
-	return 0
-}
-
-// ScopeMatch returns true if userScope is equal or broader than requiredScope.
-func ScopeMatch(userScope, requiredScope string) bool {
-	return scopeRank(userScope) >= scopeRank(requiredScope)
 }

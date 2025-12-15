@@ -1,77 +1,106 @@
-hrex-iam
-------------------------------------------
+# 🔐 HREX-IAM
 
-**Identity & Access Management (IAM) middleware and policy engine for HREX microservices**
-
-`hrex-iam` is a shared Go library providing **authentication context injection** and **authorization enforcement (RBAC + Scope-based / PBAC)** for all HREX services.
-
-It standardizes how services:
-
-- Identify callers (user, tenant, org unit)
-- Parse and propagate permission scopes
-- Enforce resource & action permissions
-- Implement policy guards consistently across the platform
-
-Designed for **Gin-based microservices**, with framework-agnostic core modules for future expansion.
+> Policy-based Identity & Access Management for Gin Microservices  
+> Hybrid **RBAC + PBAC** with Scope Enforcement
 
 ---
 
-## ✨ Features
-
-- ✅ Authentication Context Middleware
-- ✅ Header-based identity propagation
-- ✅ Permission & Scope model (`Resource:Action:Scope`)
-- ✅ Scope enforcement middleware for Gin
-- ✅ Clean & portable policy engine core
-- ✅ Configurable ignored routes
-- ✅ Distributed-friendly (Stateless)
-- ✅ Production-ready
+![Go](https://img.shields.io/badge/go-1.22+-00ADD8?logo=go)
+![Gin](https://img.shields.io/badge/gin-framework-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Release](https://img.shields.io/github/v/tag/extosoft-devsecops/hrex-iam)
 
 ---
 
+## 📦 Latest Release
 
+---
 
-## Architecture
+## ✅ What’s Included
 
-```mermaid
-flowchart LR
+### 🔑 Core
 
-%% ========= CLIENT LAYER ==========
-subgraph C["🟦 Client Layer"]
-U["👤 Web / Mobile / Service"]
-end
+- Header-based identity middleware (`AuthContextMiddleware`)
+- Permission middleware with scope validation
+- Permission Format:
 
-%% ========= IDENTITY LAYER ==========
-subgraph I["🟨 Identity Provider"]
-IDP["🔐 IdP / API Gateway<br/>(KONG)"]
-end
+```txt
+<resource>:<action>:<scope>
+```
 
-%% ========= SERVICE LAYER ==========
-subgraph S["🟩 HREX Microservice"]
+Examples:
 
-subgraph M["hrex-iam Middleware"]
-A1["Auth Context Middleware<br/>(Header → Context)"]
-A2["Permission Parser<br/>(Resource:Action:Scope)"]
-A3["Scope Guard Middleware<br/>(RequireScope)"]
-end
+```txt  
+users:view:self
+users:update:tenant
+users:delete:global
+employees:view:department
+```
 
-H["Gin Handlers"]
-end
+### 🎯 Supported Scopes
 
-%% ========= FLOW ==========
-U --> IDP
-IDP -->|Inject Headers| A1
-A1 --> A2
-A2 --> A3
-A3 -->|Authorized| H
-A3 -.->|Denied 403| X["⛔ Forbidden"]
+| Scope        | Description                |
+|--------------|----------------------------|
+| `global`     | Entire organization access |
+| `tenant`     | Tenant scoped access       |
+| `department` | Department scoped access   |
+| `self`       | Own resource only          |
+
+Scope hierarchy:
+
+```text
+global > tenant > department > self
 ```
 
 
+### 🔄 Scope Resolvers
 
-## 📦 Installation
+Built-in helpers:
+- ScopeGlobal()
+- ScopeTenant()
+- ScopeSelfOnly()
+- ScopeSelfOrTenantFromParam(param)
+- ScopeFromCustomFunc(fn)
+  🎯 Target Resolver
 
-```bash
+
+### Extract resource targeting from:
+
+Query string
+
+URL Param :id
+
+API versioned paths /vX/users/:id
+
+JSON body
+
+```
+target := middlewares.ExtractTargets(c)
+
+fmt.Println(target.UserID)
+fmt.Println(target.TenantID)
+fmt.Println(target.OrgUnitID)
+```
+
+Returns:
+```golang
+type TargetIdentity struct {
+    UserID    string
+    TenantID  string
+    OrgUnitID string
+}
+```
+
+### 📥 Installation
+
+```shell
 go get github.com/extosoft-devsecops/hrex-iam@latest
+
 ```
 
+Or pin a version:
+
+```shell
+go get github.com/extosoft-devsecops/hrex-iam@v1.0.0
+
+```

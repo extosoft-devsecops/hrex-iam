@@ -31,7 +31,7 @@ func DefaultAuthContextConfig() AuthContextConfig {
 		HeaderUserID:         "X-User-Id",
 		HeaderTenantID:       "X-Tenant-Id",
 		HeaderOrgUnitID:      "X-Org-Unit-Id",
-		HeaderPermissions:    "X-Permissions",
+		HeaderPermissions:    "X-Permission-Data",
 		PermissionsDelimiter: ",",
 	}
 }
